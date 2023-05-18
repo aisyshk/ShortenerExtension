@@ -1,3 +1,5 @@
+'use strict ';
+
 chrome.runtime.onInstalled.addListener(() => {
   chrome.contextMenus.create({
     id: 'aisysShortenerMenu',
@@ -18,8 +20,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   };
 
   const response = await fetch(url, params)
-    .catch(err => {
-      console.log('Fetch failed: ', err);
+    .catch(error => {
+      console.log(`Fetch failed: ${error}`);
     });
 
   if (!response) {
