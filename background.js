@@ -10,12 +10,7 @@ chrome.contextMenus.onClicked.addListener(function(info, tab) {
     if (info.menuItemId == "aisysShortenerMenu")
     {
         let url;
-
-        chrome.tabs.query({ active: true, currentWindow: true}, function (tabs) {
-            var currentTab = tabs[0];
-            url = currentTab.url;
-        });
-
+        
         if (info.linkUrl)
         {
             url = info.linkUrl;
