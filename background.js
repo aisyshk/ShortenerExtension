@@ -1,34 +1,40 @@
-chrome.runtime.onInstalled.addListener(function() {
-    chrome.contextMenus.create({
-        id: "aisysShortenerMenu",
-        title: "Aisys Shortener",
-        contexts: ["link","page","selection"]
-    });
+'use strict ';
+
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'aisysShortenerMenu',
+    title: 'Aisys Shortener',
+    contexts: ['link', 'page', 'selection']
+  });
 });
 
-chrome.contextMenus.onClicked.addListener(function(info, tab) {
-    if (info.menuItemId == "aisysShortenerMenu")
-    {
-        let url;
-        
-        if (info.linkUrl)
-        {
-            url = info.linkUrl;
-        }
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if (info.menuItemId !== 'aisysShortenerMenu') {
+    return;
+  }
 
-        let xhr = new XMLHttpRequest();
-        xhr.withCredentials = false;
+  const url = info.linkUrl;
+  const params = {
+    method: 'POST',
+    credentials: 'omit'
+  };
 
-        xhr.addEventListener("readystatechange", function () {
-            if (this.readyState === 4)
-            {
-                console.log(this.responseText);
-                alert(this.responseText);
-            }
-        });
+  const response = await fetch(url, params)
+    .catch(error => {
+      console.log(`Fetch failed: ${error}`);
+    });
 
-        xhr.open("POST", "" + url);
+  if (!response) {
+    return;
+  }
 
-        xhr.send();
-    }
-})
+  if (!response.ok) {
+    throw new Error(`HTTP error: ${response.status}`);
+  }
+
+  const data = await response.text();
+
+  console.log(data);
+
+  alert(data);
+});
