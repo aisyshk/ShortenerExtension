@@ -8,18 +8,33 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if (info.menuItemId !== 'aisysShortenerMenu') {
-    return;
-  }
+chrome.runtime.onInstalled.addListener(() => {
+  chrome.contextMenus.create({
+    id: 'aisysImageTab',
+    title: 'Open image in new tab and shorten',
+    contexts: ['image']
+  });
+});
 
-  const url = info.linkUrl;
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
   const params = {
     method: 'POST',
     credentials: 'omit'
   };
 
-  const response = await fetch(url, params)
+  let url;
+
+  if (info.menuItemId === 'aisysImageTab')
+  {
+    url = info.srcUrl;
+  }
+
+  if (info.menuItemId === 'aisysShortenerMenu')
+  {
+    url = info.linkUrl;
+  }
+  
+  const response = await fetch("" + url, params)
     .catch(error => {
       console.log(`Fetch failed: ${error}`);
     });
@@ -34,7 +49,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
 
   const data = await response.text();
 
-  console.log(data);
+  chrome.tabs.create({url: data});
 
   alert(data);
+
 });
